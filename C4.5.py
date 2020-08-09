@@ -56,15 +56,15 @@ def splitDataSet(dataSet, label, value):
     return retDataSet
 
 
-def chooseBestFeature(dataSet,labels):
+def entropyaverage(dataSet,labels):
     """
-    求解信息增益，选择最优的划分属性,
+    求解信息增益平均值
     @ param dataSet: DataSet
-    @ return bestFeature: 最佳划分属性
     """
-    baseEntroy = calcShannonEnt(dataSet,labels)
-    bestInfoGain = 0.0
-    bestFeature = -1
+    # D的信息增益
+    baseEntroy = calcShannonEnt(dataSet, labels)
+    # 信息增益平均值
+    Gainaverage = 0.0
     for label in labels[:len(labels)-1]:
         # 获取第i个特征所有可能的取值
         featureList = [example[label] for example in dataSet]
@@ -78,9 +78,48 @@ def chooseBestFeature(dataSet,labels):
             valueEntroy = calcShannonEnt(subDataSet, labels)
             newEntropy += prob*valueEntroy
         inforGain = baseEntroy - newEntropy
+        Gainaverage+=inforGain
+    Gainaverage = Gainaverage/(len(labels)-1)
+    return Gainaverage
 
-        if inforGain > bestInfoGain:
-            bestInfoGain = inforGain
+def chooseBestFeature(dataSet,labels):
+    """
+    求解增益率，选择最优的划分属性,
+    @ param dataSet: DataSet
+    @ return bestFeature: 最佳划分属性
+    """
+    # Ent(D)，D的信息熵
+    baseEntroy = calcShannonEnt(dataSet,labels)
+    # 信息增益平均值
+    Gainaverage=entropyaverage(dataSet,labels)
+    # 增益率初值
+    bestGain_ratio = 0.0
+    # 最优划分属性初值
+    bestFeature = -1
+    # 遍历所有属性
+    for label in labels[:len(labels)-1]:
+        # 获取第i个特征所有可能的取值
+        featureList = [example[label] for example in dataSet]
+        # 去除重复值
+        uniqueVals = set(featureList)
+        # a的固有值IV（a）
+        IV=0.0
+        newEntropy = 0.0
+        # 遍历该属性的所有取值
+        for value in uniqueVals:
+            subDataSet = splitDataSet(dataSet, label, value)
+            # 特征label的数据集占总数的比例
+            prob = len(subDataSet) / float(len(dataSet))
+            IV-=prob * np.log2(prob)
+            valueEntroy = calcShannonEnt(subDataSet, labels)
+            newEntropy += prob*valueEntroy
+        # 信息增益
+        inforGain = baseEntroy - newEntropy
+        # 信息增益率
+        Gain_ratio = inforGain/IV
+        # 由书知，我们需要从信息增益高于平均水平的属性中选择增益率最高的属性
+        if Gain_ratio > bestGain_ratio and inforGain >= Gainaverage:
+            bestGain_ratio = Gain_ratio
             bestFeature = label
     return bestFeature
 

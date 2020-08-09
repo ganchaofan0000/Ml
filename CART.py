@@ -21,9 +21,9 @@ def loadDataSet(path):
 
 def calcShannonEnt(dataSet,labels):
     """
-    计算给定数据集的信息熵
+    计算给定数据集的基尼值
     @ param dataSet: DataSet
-    @ return shannonEnt: 香农熵
+    @ return shannonEnt: 基尼值
     """
     numEntries = len(dataSet)
     labelCounts = {}
@@ -34,10 +34,10 @@ def calcShannonEnt(dataSet,labels):
         if currentLabel not in labelCounts.keys():
             labelCounts[currentLabel] = 0
         labelCounts[currentLabel] += 1
-    shannonEnt = 0.0
+    shannonEnt = 1.0
     for key in labelCounts:
         prob = float(labelCounts[key]) / numEntries
-        shannonEnt -= prob * np.log2(prob)
+        shannonEnt -= prob * prob
     return shannonEnt
 
 
@@ -58,29 +58,29 @@ def splitDataSet(dataSet, label, value):
 
 def chooseBestFeature(dataSet,labels):
     """
-    求解信息增益，选择最优的划分属性,
+    求解基尼指数，选择最优的划分属性,
     @ param dataSet: DataSet
     @ return bestFeature: 最佳划分属性
     """
-    baseEntroy = calcShannonEnt(dataSet,labels)
-    bestInfoGain = 0.0
+    # 基尼指数初值
+    bestGini_index = 1000.0
+    # 属性初值
     bestFeature = -1
     for label in labels[:len(labels)-1]:
         # 获取第i个特征所有可能的取值
         featureList = [example[label] for example in dataSet]
         # 去除重复值
         uniqueVals = set(featureList)
-        newEntropy = 0.0
+        Gini_index = 0.0
         for value in uniqueVals:
             subDataSet = splitDataSet(dataSet, label, value)
             # 特征label的数据集占总数的比例
             prob = len(subDataSet) / float(len(dataSet))
             valueEntroy = calcShannonEnt(subDataSet, labels)
-            newEntropy += prob*valueEntroy
-        inforGain = baseEntroy - newEntropy
+            Gini_index += prob*valueEntroy
 
-        if inforGain > bestInfoGain:
-            bestInfoGain = inforGain
+        if Gini_index < bestGini_index:
+            bestGini_index = Gini_index
             bestFeature = label
     return bestFeature
 
