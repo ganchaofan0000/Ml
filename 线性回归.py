@@ -108,8 +108,8 @@ def normalEquation(x, y):
 
 if __name__ == '__main__':
     # 读取数据
-    train_data_path = r'./train_dataset.csv'
-    test_data_path=r'./test_dataset.csv'
+    train_data_path = r'DataSet/train_dataset.csv'
+    test_data_path=r'DataSet/test_dataset.csv'
 
     # 训练数据整理
     train0,test0=splitarr(readcsv(train_data_path))
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     #print("theta的取值为%s" % (theta))
     price=x_norm.dot(theta_best)
     print("价格为%s" %(price.shape[0]))
-    with open("price3.csv", "w",encoding='utf-8',newline='') as csvfile:
+    with open("DataSet/price.csv", "w",encoding='utf-8',newline='') as csvfile:
         writer = csv.writer(csvfile)
         # 先写入columns_name
         writer.writerow(["ID", "value"])

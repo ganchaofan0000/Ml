@@ -9,7 +9,7 @@ def loadDataSet(path):
     @ return dataSet: 读取的数据集
     """
     # 对数据进行处理
-    data = pd.read_csv('isFish.csv', delimiter=',')
+    data = pd.read_csv(path, delimiter=',')
     labelSet = list(data.columns.values) # list
     with open(path,'r') as f:
         reader = csv.DictReader(f)
@@ -20,7 +20,7 @@ def loadDataSet(path):
 def calcShannonEnt(dataSet,labels):
     """
     计算给定数据集的信息熵
-    @ param dataSet: 数据集
+    @ param dataSet: DataSet
     @ return shannonEnt: 香农熵
     """
     numEntries = len(dataSet)
@@ -42,7 +42,7 @@ def calcShannonEnt(dataSet,labels):
 def splitDataSet(dataSet, label, value):
     """
     划分数据集, 提取所有满足一个特征的值
-    @ param dataSet: 数据集
+    @ param dataSet: DataSet
     @ param axis: 划分数据集的特征
     @ param value: 提取出来满足某特征的list
     """
@@ -57,7 +57,7 @@ def splitDataSet(dataSet, label, value):
 def chooseBestFeature(dataSet,labels):
     """
     求解信息增益，选择最优的划分属性,
-    @ param dataSet: 数据集
+    @ param dataSet: DataSet
     @ return bestFeature: 最佳划分属性
     """
     # 属性的个数
@@ -107,7 +107,7 @@ def majorityCnt(dataSet,labels):
 def createTree(dataSet, labels):
     """
     构造决策树
-    @ param dataSet: 数据集
+    @ param dataSet: DataSet
     @ param labels: 标签集
     @ return myTree: 决策树
     """
@@ -140,7 +140,7 @@ def createTree(dataSet, labels):
 
 
 def main():
-    path='./isFish.csv'
+    path='DataSet/isFish.csv'
     dataSet,labelSet=loadDataSet(path)
     tree = createTree(dataSet, labelSet)
     print(tree)

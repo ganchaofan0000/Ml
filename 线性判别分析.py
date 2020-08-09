@@ -55,8 +55,8 @@ def LDA(u0,u1,Sw):
 
 
 def main():
-    train_path = './horseColicTraining.txt'
-    test_path = './horseColicTest.txt'
+    train_path = 'DataSet/horseColicTraining.txt'
+    test_path = 'DataSet/horseColicTest.txt'
     train=readtxt(train_path)
     u0,u1,x0,x1 = getaverage(train)
     Sw=withmatrix(u0,u1,x0,x1)
