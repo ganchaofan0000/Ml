@@ -2,14 +2,14 @@
 import numpy as np
 import pandas as pd
 import csv
-
+import DrawTree
 def loadDataSet(path):
     """
     导入数据
     @ return dataSet: 读取的数据集
     """
     # 对数据进行处理
-    reader = pd.read_csv(path, encoding='gbk')
+    reader = pd.read_csv(path)
     # 删除名称为‘编号’的的列
     reader.drop('编号', axis=1, inplace=True)
     # 获得列名,列表形式
@@ -185,6 +185,7 @@ def main():
     path='DataSet/西瓜数据集2.txt'
     dataSet,labelSet=loadDataSet(path)
     tree = createTree(dataSet, labelSet)
+    DrawTree.createPlot(tree)
     print(tree)
 
 
