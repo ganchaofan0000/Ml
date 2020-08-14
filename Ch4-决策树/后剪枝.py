@@ -1,4 +1,8 @@
 
+# 基于ID3的后剪枝
+import copy
+import re
+
 import numpy as np
 import pandas as pd
 import csv
@@ -39,6 +43,18 @@ def calcShannonEnt(dataSet,labels):
         prob = float(labelCounts[key]) / numEntries
         shannonEnt -= prob * np.log2(prob)
     return shannonEnt
+
+def splitContinuousDataSet(dataSet, label, value):
+    # 小于value的数据
+    left = []
+    # 大于value的数据
+    right = []
+    for featVec in dataSet:
+        if featVec[label] > value:
+            right.append(featVec)
+        if featVec[label] <= value:
+            left.append(featVec)
+    return left,right
 
 
 def splitDataSet(dataSet, label, value):
@@ -104,6 +120,56 @@ def majorityCnt(dataSet,labels):
     # 返回出现次数最多的
     return sortedClassCount[0][0]
 
+# 由于在Tree中，连续值特征的名称以及改为了  feature<=value的形式
+# 因此对于这类特征，需要利用正则表达式进行分割，获得特征名以及分割阈值
+def classify(inputTree, featLabels, testVec):
+    firstStr = list(inputTree.keys())[0]
+    if '<=' in firstStr:
+        featvalue = float(re.findall('<=(\d+\.\d+)', firstStr)[0])
+        featkey = re.findall('(.*?)<=', firstStr)[0]
+        secondDict = inputTree[firstStr]
+        #featIndex = featLabels.index(featkey)
+        if testVec[featkey] <= featvalue:
+            judge = 'Y'
+        else:
+            judge = 'N'
+        for key in secondDict.keys():
+            if judge == key:
+                if type(secondDict[key]).__name__ == 'dict':
+                    classLabel = classify(secondDict[key], featLabels, testVec)
+                else:
+                    classLabel = secondDict[key]
+    else:
+        secondDict = inputTree[firstStr]
+        #featIndex = featLabels.index(firstStr)
+        for key in secondDict.keys():
+            if testVec[firstStr] == key:
+                if type(secondDict[key]).__name__ == 'dict':
+                    classLabel = classify(secondDict[key], featLabels, testVec)
+                else:
+                    classLabel = secondDict[key]
+    return classLabel
+
+
+def testing(myTree, data_test, labels):
+    error = 0.0
+    for i in range(len(data_test)):
+        if classify(myTree, labels, data_test[i]) != data_test[i][labels[-1]]:
+            error += 1
+    # print
+    # 'myTree %d' % error
+    return float(error)
+
+
+def testingMajor(major, data_test,labels):
+    error = 0.0
+    for i in range(len(data_test)):
+        if major != data_test[i][labels[-1]]:
+            error += 1
+    # print
+    # 'major %d' % error
+    return float(error)
+
 
 def createTree(dataSet, labels):
     """
@@ -141,13 +207,46 @@ def createTree(dataSet, labels):
         myTree[bestFeatLabel][value] = createTree(dataSetchridren, labelscopy)
     return myTree
 
+# 后剪枝
+def postPruningTree(inputTree, dataSet, data_test, labels):
+    firstStr = list(inputTree.keys())[0]
+    secondDict = inputTree[firstStr]
+    if '<=' in firstStr:  # 对连续的特征值，使用正则表达式获得特征标签和value
+        featvalue = float(re.findall('<=(\d+\.\d+)', firstStr)[0])
+        featkey = re.findall('(.*?)<=', firstStr)[0]
+        left, right = splitContinuousDataSet(dataSet, featkey, featvalue)
+        left_test, right_test = splitContinuousDataSet(data_test, featkey, featvalue)
+        for key in secondDict.keys():  # 对每个分支
+            if type(secondDict[key]).__name__ == 'dict':
+                if key == 'Y':
+                    inputTree[firstStr][key] = postPruningTree(secondDict[key],left,left_test,copy.deepcopy(labels))
+                else:
+                    inputTree[firstStr][key] = postPruningTree(secondDict[key], right, right_test, copy.deepcopy(labels))
+    else: # 对离散值的处理
+        for key in secondDict.keys():  # 对每个分支
+            if type(secondDict[key]).__name__ == 'dict':
+                dataSetchridren = splitDataSet(dataSet, firstStr, key)
+                data_testchridren = splitDataSet(data_test, firstStr, key)
+                inputTree[firstStr][key]=postPruningTree(secondDict[key],dataSetchridren,data_testchridren,copy.deepcopy(labels))
+
+    if testing(inputTree,data_test, labels) <= testingMajor(majorityCnt(dataSet, labels),data_test,labels):
+        return inputTree
+    return majorityCnt(dataSet,labels)
+
 
 def main():
-    path='DataSet/西瓜数据集2.txt'
-    dataSet,labelSet=loadDataSet(path)
+    # path='DataSet/西瓜数据集2.txt'
+    # dataSet,labelSet=loadDataSet(path)
+    # tree = createTree(dataSet, labelSet)
+    # DrawTree.createPlot(tree)
+    # print(tree)
+    path1 = '../DataSet/西瓜1'
+    path2 = '../DataSet/西瓜2'
+    data_test, labelSet = loadDataSet(path2)
+    dataSet, labelSet = loadDataSet(path1)
     tree = createTree(dataSet, labelSet)
     DrawTree.createPlot(tree)
-    print(tree)
-
+    tree=postPruningTree(tree,dataSet,data_test,labelSet)
+    DrawTree.createPlot(tree)
 
 main()

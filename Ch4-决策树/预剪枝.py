@@ -280,8 +280,8 @@ def main():
     # tree = createTree(dataSet, labelSet,data_test)
     # DrawTree.createPlot(tree)
     # print(tree)
-    path1 = 'DataSet/西瓜1'
-    path2 = 'DataSet/西瓜2'
+    path1 = '../DataSet/西瓜1'
+    path2 = '../DataSet/西瓜2'
     data_test,labelSet=loadDataSet(path2)
     dataSet,labelSet=loadDataSet(path1)
     print(dataSet)

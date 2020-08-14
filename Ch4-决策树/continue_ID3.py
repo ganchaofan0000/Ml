@@ -212,7 +212,7 @@ def createTree(dataSet, labels):
 
 
 def main():
-    path='DataSet/西瓜数据集3.txt'
+    path='../DataSet/西瓜数据集3.txt'
     dataSet,labelSet=loadDataSet(path)
     tree = createTree(dataSet, labelSet)
     DrawTree.createPlot(tree)

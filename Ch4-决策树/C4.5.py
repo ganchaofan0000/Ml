@@ -1,7 +1,6 @@
 
 import numpy as np
 import pandas as pd
-import csv
 import DrawTree
 def loadDataSet(path):
     """
@@ -21,9 +20,9 @@ def loadDataSet(path):
 
 def calcShannonEnt(dataSet,labels):
     """
-    计算给定数据集的基尼值
+    计算给定数据集的信息熵
     @ param dataSet: DataSet
-    @ return shannonEnt: 基尼值
+    @ return shannonEnt: 香农熵
     """
     numEntries = len(dataSet)
     labelCounts = {}
@@ -34,10 +33,10 @@ def calcShannonEnt(dataSet,labels):
         if currentLabel not in labelCounts.keys():
             labelCounts[currentLabel] = 0
         labelCounts[currentLabel] += 1
-    shannonEnt = 1.0
+    shannonEnt = 0.0
     for key in labelCounts:
         prob = float(labelCounts[key]) / numEntries
-        shannonEnt -= prob * prob
+        shannonEnt -= prob * np.log2(prob)
     return shannonEnt
 
 
@@ -56,31 +55,70 @@ def splitDataSet(dataSet, label, value):
     return retDataSet
 
 
-def chooseBestFeature(dataSet,labels):
+def entropyaverage(dataSet,labels):
     """
-    求解基尼指数，选择最优的划分属性,
+    求解信息增益平均值
     @ param dataSet: DataSet
-    @ return bestFeature: 最佳划分属性
     """
-    # 基尼指数初值
-    bestGini_index = 1000.0
-    # 属性初值
-    bestFeature = -1
+    # D的信息增益
+    baseEntroy = calcShannonEnt(dataSet, labels)
+    # 信息增益平均值
+    Gainaverage = 0.0
     for label in labels[:len(labels)-1]:
         # 获取第i个特征所有可能的取值
         featureList = [example[label] for example in dataSet]
         # 去除重复值
         uniqueVals = set(featureList)
-        Gini_index = 0.0
+        newEntropy = 0.0
         for value in uniqueVals:
             subDataSet = splitDataSet(dataSet, label, value)
             # 特征label的数据集占总数的比例
             prob = len(subDataSet) / float(len(dataSet))
             valueEntroy = calcShannonEnt(subDataSet, labels)
-            Gini_index += prob*valueEntroy
+            newEntropy += prob*valueEntroy
+        inforGain = baseEntroy - newEntropy
+        Gainaverage+=inforGain
+    Gainaverage = Gainaverage/(len(labels)-1)
+    return Gainaverage
 
-        if Gini_index < bestGini_index:
-            bestGini_index = Gini_index
+def chooseBestFeature(dataSet,labels):
+    """
+    求解增益率，选择最优的划分属性,
+    @ param dataSet: DataSet
+    @ return bestFeature: 最佳划分属性
+    """
+    # Ent(D)，D的信息熵
+    baseEntroy = calcShannonEnt(dataSet,labels)
+    # 信息增益平均值
+    Gainaverage=entropyaverage(dataSet,labels)
+    # 增益率初值
+    bestGain_ratio = 0.0
+    # 最优划分属性初值
+    bestFeature = -1
+    # 遍历所有属性
+    for label in labels[:len(labels)-1]:
+        # 获取第i个特征所有可能的取值
+        featureList = [example[label] for example in dataSet]
+        # 去除重复值
+        uniqueVals = set(featureList)
+        # a的固有值IV（a）
+        IV=0.0
+        newEntropy = 0.0
+        # 遍历该属性的所有取值
+        for value in uniqueVals:
+            subDataSet = splitDataSet(dataSet, label, value)
+            # 特征label的数据集占总数的比例
+            prob = len(subDataSet) / float(len(dataSet))
+            IV-=prob * np.log2(prob)
+            valueEntroy = calcShannonEnt(subDataSet, labels)
+            newEntropy += prob*valueEntroy
+        # 信息增益
+        inforGain = baseEntroy - newEntropy
+        # 信息增益率
+        Gain_ratio = inforGain/IV
+        # 由书知，我们需要从信息增益高于平均水平的属性中选择增益率最高的属性
+        if Gain_ratio > bestGain_ratio and inforGain >= Gainaverage:
+            bestGain_ratio = Gain_ratio
             bestFeature = label
     return bestFeature
 
@@ -143,7 +181,7 @@ def createTree(dataSet, labels):
 
 
 def main():
-    path='DataSet/西瓜数据集2.txt'
+    path='../DataSet/西瓜数据集2.txt'
     dataSet,labelSet=loadDataSet(path)
     tree = createTree(dataSet, labelSet)
     DrawTree.createPlot(tree)

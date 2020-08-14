@@ -99,7 +99,7 @@ def predict(iX,theta,gamma,v,w):
     return predictY
 
 def main():
-    path='DataSet/watermelon_3.csv'
+    path='../DataSet/watermelon_3.csv'
     dataset,labelset=readcsv(path)
     # 学习率
     dataset = np.array(dataset)

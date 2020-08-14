@@ -114,8 +114,8 @@ def optimization(x_train,y_train,x_test,y_test):
     print("测试正确率为%s"%correct)
     return theta_best
 def main():
-    train_path='DataSet/horseColicTraining.txt'
-    test_path='DataSet/horseColicTest.txt'
+    train_path='../DataSet/horseColicTraining.txt'
+    test_path='../DataSet/horseColicTest.txt'
     train_data=readtxt(train_path)
 
     x_train, y_train, x_test, y_test=assessmentmethod(train_data)

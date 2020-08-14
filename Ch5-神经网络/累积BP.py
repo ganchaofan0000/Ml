@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-dataset = pd.read_csv('DataSet/watermelon_3.csv', delimiter=",")
+dataset = pd.read_csv('../DataSet/watermelon_3.csv', delimiter=",")
 
 #according to P54--3.2
 #process the dataset
