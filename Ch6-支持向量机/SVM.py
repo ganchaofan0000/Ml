@@ -47,6 +47,7 @@ class mySVM(object):
 
     def __init__(self, C=1.0, kernel='rbf', degree=3, gamma='auto', tol=1e-3, max_iter=-1, seed=16):
         self.C = C
+        # assert为断言，如果满足则继续进行，否则报错,linear：线性核，poly：多项式核，rbf：高斯核
         assert kernel in ('linear', 'poly', 'rbf')
         self.kernel = kernel
         self.degree = degree
@@ -291,11 +292,13 @@ class mySVM(object):
         :param xi: (1, m)
         :return:
         '''
-
+        # 线性核
         if self.kernel == 'linear':
             kX_i = np.dot(X, xi.T)
+        # 多项式核
         elif self.kernel == 'poly':
             kX_i = np.power(np.dot(X, xi.T), self.degree)
+        # 高斯核
         else:
             kX_i = np.exp(-self._gamma * np.sum(np.power(X - xi, 2), axis=1))
 
@@ -331,7 +334,7 @@ class mySVM(object):
 if __name__ == '__main__':
     clf = mySVM(C=10000)
 
-    path = 'DataSet/watermelon3_0a_Ch.txt'
+    path = '../DataSet/watermelon3_0a_Ch.txt'
     data = pd.read_table(path, delimiter=' ', dtype=float)
 
     X = data.iloc[:, [0, 1]].values
