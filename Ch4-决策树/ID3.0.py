@@ -1,8 +1,9 @@
 
 import numpy as np
 import pandas as pd
-import csv
 import DrawTree
+
+
 def loadDataSet(path):
     """
     导入数据

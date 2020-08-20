@@ -1,17 +1,18 @@
 
-# ID3算法，可处理连续值
+# ID3算法，可处理连续值(基于字典的形式)
 import re
 import numpy as np
 import pandas as pd
-import csv
 import DrawTree
+
+
 def loadDataSet(path):
     """
     导入数据
     @ return dataSet: 读取的数据集
     """
     # 对数据进行处理
-    reader = pd.read_csv(path, encoding='gbk')
+    reader = pd.read_csv(path)
     # 删除名称为‘编号’的的列
     reader.drop('编号', axis=1, inplace=True)
     reader['密度'] = reader['密度'].astype('float')
@@ -214,6 +215,7 @@ def createTree(dataSet, labels):
 def main():
     path='../DataSet/西瓜数据集3.txt'
     dataSet,labelSet=loadDataSet(path)
+    print(dataSet)
     tree = createTree(dataSet, labelSet)
     DrawTree.createPlot(tree)
     print(tree)
