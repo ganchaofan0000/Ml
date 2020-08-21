@@ -1,5 +1,5 @@
 
-# ID3算法，可处理连续值
+# 基于不剪枝决策树（CART）的AdaBoost算法
 import re
 import numpy as np
 import pandas as pd
