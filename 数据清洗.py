@@ -67,8 +67,13 @@ import math
 # print("按行统计的结果为：", result)
 # print(math.log2(3))
 # print(int(math.log2(3)))
+#
+# list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+# slice = random.sample(list, 5)  #从list中随机获取5个元素，作为一个片断返回
+# print (slice)
+# print (list)
 
-list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-slice = random.sample(list, 5)  #从list中随机获取5个元素，作为一个片断返回
-print (slice)
-print (list)
+
+li=[1,2,3,4,5,6]
+random.shuffle(li)
+print(li)

@@ -1,3 +1,4 @@
+
 import numpy as np
 a1 = np.array([1,2,3])
 a1 = np.mat(a1)
@@ -46,5 +47,6 @@ d=np.hstack((a,b))#按行合并，即行数不变，扩展列数
 
 a=np.mat(np.arange(4).reshape((2,2)))
 print(a[1,1])
+
 
 
