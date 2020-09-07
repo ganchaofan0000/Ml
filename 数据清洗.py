@@ -19,14 +19,14 @@
 #     print(labels)
 
 from collections import Counter
-import numpy as np
-words = [
-    'look', 'into', 'my', 'eyes', 'look', 'into', 'my', 'eyes',
-    'the', 'eyes', 'the', 'eyes', 'the', 'eyes', 'not', 'around', 'the',
-    'eyes', "don't", 'look', 'around', 'the', 'eyes', 'look', 'into',
-    'my', 'eyes', "you're", 'under'
-]
-words=np.array(words)
+# import numpy as np
+# words = [
+#     'look', 'into', 'my', 'eyes', 'look', 'into', 'my', 'eyes',
+#     'the', 'eyes', 'the', 'eyes', 'the', 'eyes', 'not', 'around', 'the',
+#     'eyes', "don't", 'look', 'around', 'the', 'eyes', 'look', 'into',
+#     'my', 'eyes', "you're", 'under'
+# ]
+# words=np.array(words)
 
 # print(words.shape)
 # print(Counter(words).most_common())
@@ -74,6 +74,55 @@ import math
 # print (list)
 
 
-li=[1,2,3,4,5,6]
-random.shuffle(li)
-print(li)
+# li=[1,2,3,4,5,6]
+# random.shuffle(li)
+# print(li)
+# import pandas as pd
+#
+# data = pd.read_csv('./DataSet/watermelon_3.csv')
+# print(data)
+# print(data.columns.values)
+
+# import numpy as np
+# import pandas as pd
+# def loadDataSet(path):
+#     """
+#     导入数据
+#     @ return dataSet: 读取的数据集
+#     """
+#     # 对数据进行处理
+#     reader = pd.read_csv(path)
+#     # 删除名称为‘编号’的的列
+#     reader.drop('编号', axis=1, inplace=True)
+#     # 获得列名,列表形式
+#     labelSet = reader.columns.values
+#     # 获得列表类型的数据
+#     dataSet = reader.values
+#     return dataSet,labelSet
+#
+# path = './DataSet/watermelon_3.csv'
+#
+# data, label= loadDataSet(path)
+#
+# for i in range(data.shape[1]):
+#     new_data = data
+#     col = data[:, i]
+#     if isinstance(col[0], int) or isinstance(col[0], float):
+#         new_data[:, i] = (new_data[:, i] - new_data[:, i].min()) / (new_data[:, i].max() - new_data[:, i].min())
+#
+# print(new_data)
+
+# list = [2,3,1,4,2,7,8,4,9,3,5]
+# # print(np.argmin(list))
+import heapq
+
+nums = [1, 8, 2, 23, 7, -4, 18, 23, 24, 37, 2]
+
+# 最大的3个数的索引
+max_num_index_list = map(nums.index, heapq.nlargest(3, nums))
+
+# 最小的3个数的索引
+min_num_index_list = map(nums.index, heapq.nsmallest(3, nums))
+
+print(list(max_num_index_list))
+print(list(min_num_index_list))
